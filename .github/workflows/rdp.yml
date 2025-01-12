@@ -21,27 +21,15 @@ jobs:
       # Step 3: Enable Remote Desktop (TS)
       - name: Enable TS
         run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "FDenyTSConnections" -Value 0
-
-      # Step 4: Allow Remote Desktop through Firewall
-      - name: Enable Remote Desktop through Firewall
-        run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-
-      # Step 5: Enable User Authentication for RDP
-      - name: Enable User Authentication for RDP
-        run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStationRDP-Tcp' -Name "UserAuthentication" -Value 1
-
-      # Step 6: Set local user credentials
-      - name: Set local user credentials
-        run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "admin@123" -Force)
-
-      # Step 7: Start Playit with provided authentication key
-      - name: Start Playit with Auth Key
+      - run: Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+      - run: Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStationRDP-Tcp' -Name "UserAuthentication" -Value 1
+      - run: Set-LocalUser -Name "runneradmin" -Password (ConvertTo-SecureString -AsPlainText "admin@123" -Force)
+      - name: www.toolboxlap.com
         env:
           PLAYIT_AUTH_KEY: ${{secrets.PL}}
         run: |
           Start-Process -FilePath "$env:USERPROFILE\playit.exe" -ArgumentList "--secret $env:PLAYIT_AUTH_KEY" -NoNewWindow -Wait
           Start-Process -FilePath "$env:USERPROFILE\playit.exe" -NoNewWindow
-
-      # Step 8: Keep the GitHub Action Runner Alive (to prevent workflow stop)
       - name: Keep the GitHub Action Runner Alive
-        run: Start-Sleep -Seconds 21600  # Adjust the duration based on your needs
+        run: |
+          Start-Sleep -Seconds 21600 
